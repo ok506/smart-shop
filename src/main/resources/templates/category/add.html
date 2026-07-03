@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title th:text="${item == null ? '新增分类' : '编辑分类'}">分类表单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px 40px 40px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e8ecf1;
+            padding-bottom: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .form-header h2 {
+            font-size: 22px;
+            color: #1a2332;
+            font-weight: 700;
+        }
+
+        .form-header a {
+            color: #4a5568;
+            text-decoration: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            background: #e8ecf1;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-header a:hover {
+            background: #d5d9e0;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required {
+            color: #e53e3e;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+            color: #2d3748;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: #ffffff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 14px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a5568;
+            background: #e8ecf1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-cancel:hover {
+            background: #d5d9e0;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .form-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-header">
+        <h2 th:text="${item == null ? '📝 新增分类' : '✏️ 编辑分类'}"></h2>
+        <a th:href="@{/category/list}">⬅ 返回列表</a>
+    </div>
+
+    <form method="post" th:action="${item == null ? '/category/add' : '/category/update'}">
+        <input name="id" th:if="${item != null}" th:value="${item.id}" type="hidden">
+
+        <div class="form-group">
+            <label>分类名称 <span class="required">*</span></label>
+            <input name="name" placeholder="请输入分类名称" required th:value="${item != null ? item.name : ''}" type="text">
+        </div>
+
+        <div class="form-group">
+            <label>分类描述</label>
+            <textarea name="descp" placeholder="请输入分类描述（选填）" th:text="${item != null ? item.descp : ''}"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-submit" type="submit">💾 保存分类</button>
+            <a class="btn-cancel" th:href="@{/category/list}">取消</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

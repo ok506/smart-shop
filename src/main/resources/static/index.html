@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页 - 商品管理系统</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            text-align: center;
+            margin-top: 80px;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #1a2332;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .menu a {
+            text-decoration: none;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .menu a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu .logout {
+            background: #e53e3e;
+        }
+
+        .menu .logout:hover {
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+        }
+
+        .user-info {
+            color: #4a5568;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🏠 商品管理系统</h2>
+    <p class="subtitle">欢迎使用智慧商品管理后台</p>
+
+    <div class="menu">
+        <a th:href="@{/category/list}">🏷️ 分类管理</a>
+        <a th:href="@{/product/list}">📦 商品管理</a>
+        <a class="logout" th:href="@{/logout}">🚪 退出登录</a>
+    </div>
+
+    <div class="user-info">
+        👤 当前用户：<strong th:text="${#authentication.name}"></strong>
+    </div>
+</div>
+</body>
+</html>

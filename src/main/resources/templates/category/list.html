@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>分类管理 - 智慧商品管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px 35px 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== 页面标题 ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e8ecf1;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #1a2332;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h2 span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 13px;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-actions a {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #00b894 0%, #00a381 100%);
+            color: white !important;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+        }
+
+        .btn-back {
+            background: #e8ecf1;
+            color: #4a5568 !important;
+        }
+
+        .btn-back:hover {
+            background: #d5d9e0;
+        }
+
+        /* ===== 搜索框 ===== */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: #ffffff;
+        }
+
+        .search-box button {
+            padding: 10px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-box button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .search-box .clear-btn {
+            background: #e8ecf1;
+            color: #4a5568;
+        }
+
+        .search-box .clear-btn:hover {
+            background: #d5d9e0;
+        }
+
+        .search-result-info {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .search-result-info strong {
+            color: #667eea;
+        }
+
+        /* ===== 表格 ===== */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        thead th {
+            color: #ffffff;
+            padding: 14px 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        thead th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        thead th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fc;
+        }
+
+        tbody td {
+            padding: 12px 10px;
+            text-align: center;
+            color: #2d3748;
+            vertical-align: middle;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: #ebf4ff;
+            color: #3182ce;
+        }
+
+        /* ===== 操作按钮 ===== */
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btns a {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #ebf4ff;
+            color: #3182ce !important;
+        }
+
+        .btn-edit:hover {
+            background: #3182ce;
+            color: white !important;
+        }
+
+        .btn-del {
+            background: #fff5f5;
+            color: #e53e3e !important;
+        }
+
+        .btn-del:hover {
+            background: #e53e3e;
+            color: white !important;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions a {
+                flex: 1;
+                text-align: center;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <h2>
+            🏷️ 分类管理
+            <span>Category</span>
+        </h2>
+        <div class="header-actions">
+            <a class="btn-add" th:href="@{/category/toAdd}">➕ 新增分类</a>
+            <a class="btn-back" th:href="@{/index}">🏠 返回首页</a>
+        </div>
+    </div>
+
+    <!-- 搜索框 -->
+    <form class="search-box" method="get" th:action="@{/category/list}">
+        <input name="keyword" placeholder="🔍 输入分类名称搜索..." th:value="${keyword}" type="text">
+        <button type="submit">搜索</button>
+        <a class="clear-btn"
+           style="padding:10px 24px;background:#e8ecf1;color:#4a5568;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;"
+           th:href="@{/category/list}" th:if="${keyword != null and keyword != ''}">清空</a>
+    </form>
+
+    <!-- 搜索结果提示 -->
+    <div class="search-result-info" th:if="${keyword != null and keyword != ''}">
+        共找到 <strong th:text="${list.size()}"></strong> 条分类，关键词：<strong th:text="${keyword}"></strong>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th style="width:80px;">分类ID</th>
+                <th>分类名称</th>
+                <th style="width:250px;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cat : ${list}">
+                <td><strong th:text="${cat.id}"></strong></td>
+                <td>
+                    <span class="category-tag" th:text="${cat.name}"></span>
+                </td>
+                <td>
+                    <div class="action-btns">
+                        <a class="btn-edit" th:href="@{/category/toEdit(id=${cat.id})}">✏️ 编辑</a>
+                        <a class="btn-del"
+                           onclick="return confirm('⚠️ 确定要删除分类「${cat.name}」吗？删除后商品将失去分类！')"
+                           th:href="@{/category/del(id=${cat.id})}">🗑️ 删除</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${list.isEmpty()}">
+                <td colspan="3">
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p th:if="${keyword != null and keyword != ''}">没有找到包含 <strong th:text="${keyword}"></strong>
+                            的分类</p>
+                        <p th:unless="${keyword != null and keyword != ''}">暂无分类，点击 <strong>「新增分类」</strong> 添加</p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${item == null ? '新增商品' : '编辑商品'}"></title>
+    <style>
+        * {
+            margin: 8px;
+        }
+
+        .box {
+            margin-top: 30px;
+        }
+
+        div {
+            margin: 10px 0;
+        }
+
+        input, select {
+            padding: 5px;
+            width: 280px;
+        }
+
+        button {
+            padding: 6px 22px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h2 th:text="${item == null ? '新增商品' : '编辑商品'}"></h2>
+<div class="box">
+    <form method="post" th:action="${item == null ? '/product/add' : '/product/update'}">
+        <!-- 编辑时传递 id -->
+        <input name="id" th:if="${item != null}" th:value="${item.id}" type="hidden">
+
+        <div>
+            <label>商品名称：</label>
+            <input name="name" required th:value="${item != null ? item.name : ''}" type="text">
+        </div>
+        <div>
+            <label>商品价格：</label>
+            <input name="price" required step="0.01" th:value="${item != null ? item.price : ''}" type="number">
+        </div>
+        <div>
+            <label>所属分类：</label>
+            <select name="catId" required>
+                <option value="">请选择</option>
+                <option th:each="c : ${categoryList}"
+                        th:selected="${item != null && item.catId == c.id}"
+                        th:text="${c.name}"
+                        th:value="${c.id}">
+                </option>
+            </select>
+        </div>
+        <div>
+            <label>图片文件名：</label>
+            <input name="img" placeholder="例如：p1.jpg" th:value="${item != null ? item.img : ''}" type="text">
+        </div>
+        <div>
+            <button type="submit">保存商品</button>
+        </div>
+    </form>
+</div>
+<br>
+<a th:href="@{/product/list}">← 返回商品列表</a>
+</body>
+</html>

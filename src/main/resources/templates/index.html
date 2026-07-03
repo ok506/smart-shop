@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 100px;
+            font-size: 20px;
+        }
+
+        a {
+            margin: 0 10px;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: #0066cc;
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<h2>欢迎进入商品管理后台</h2>
+<br>
+<a th:href="@{/category/list}">分类管理</a>
+<a th:href="@{/product/list}">商品管理</a>
+<a th:href="@{/logout}">退出登录</a>
+</body>
+</html>

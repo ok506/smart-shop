@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>商品管理 - 智慧商品管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px 35px 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== 页面标题 ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e8ecf1;
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #1a2332;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header h2 span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 13px;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-actions a {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #00b894 0%, #00a381 100%);
+            color: white !important;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+        }
+
+        .btn-back {
+            background: #e8ecf1;
+            color: #4a5568 !important;
+        }
+
+        .btn-back:hover {
+            background: #d5d9e0;
+        }
+
+        /* ===== 搜索框 ===== */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #f7fafc;
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-box .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .search-box .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .search-box input,
+        .search-box select {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-box input:focus,
+        .search-box select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .search-box .btn-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            min-width: 100px;
+        }
+
+        .search-box .btn-group button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 40px;
+        }
+
+        .btn-search {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-search:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #e8ecf1;
+            color: #4a5568;
+        }
+
+        .btn-reset:hover {
+            background: #d5d9e0;
+        }
+
+        .search-result-info {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .search-result-info strong {
+            color: #667eea;
+        }
+
+        /* ===== 表格 ===== */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        thead th {
+            color: #ffffff;
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        thead th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        thead th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fc;
+        }
+
+        tbody td {
+            padding: 10px 8px;
+            text-align: center;
+            color: #2d3748;
+            vertical-align: middle;
+        }
+
+        .product-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #edf2f7;
+            transition: transform 0.3s ease;
+        }
+
+        .product-img:hover {
+            transform: scale(1.1);
+        }
+
+        .price {
+            font-weight: 700;
+            color: #e53e3e;
+        }
+
+        .price::before {
+            content: "¥";
+            font-size: 13px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .category-tag.digital {
+            background: #ebf4ff;
+            color: #3182ce;
+        }
+
+        .category-tag.book {
+            background: #f0fff4;
+            color: #38a169;
+        }
+
+        .category-tag.life {
+            background: #fff5f5;
+            color: #e53e3e;
+        }
+
+        .category-tag.default {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .action-btns a {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #ebf4ff;
+            color: #3182ce !important;
+        }
+
+        .btn-edit:hover {
+            background: #3182ce;
+            color: white !important;
+        }
+
+        .btn-del {
+            background: #fff5f5;
+            color: #e53e3e !important;
+        }
+
+        .btn-del:hover {
+            background: #e53e3e;
+            color: white !important;
+        }
+
+        /* ===== 分页 ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid #edf2f7;
+            flex-wrap: wrap;
+        }
+
+        .pagination a {
+            padding: 6px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            color: #667eea;
+            background: #f0f2ff;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pagination .disabled {
+            color: #a0aec0;
+            background: #edf2f7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination .info {
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .pagination .info strong {
+            color: #667eea;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions a {
+                flex: 1;
+                text-align: center;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box .form-group {
+                min-width: 100%;
+            }
+
+            .search-box .btn-group {
+                width: 100%;
+            }
+
+            .search-box .btn-group button {
+                flex: 1;
+            }
+
+            .action-btns {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <h2>
+            📦 商品管理
+            <span>Product</span>
+        </h2>
+        <div class="header-actions">
+            <a class="btn-add" th:href="@{/product/toAdd}">➕ 新增商品</a>
+            <a class="btn-back" th:href="@{/index}">🏠 返回首页</a>
+        </div>
+    </div>
+
+    <!-- ✅ 搜索框 -->
+    <form class="search-box" method="get" th:action="@{/product/list}">
+        <div class="form-group">
+            <label>🔍 商品名称</label>
+            <input name="keyword" placeholder="输入商品名称搜索..." th:value="${keyword}" type="text">
+        </div>
+        <div class="form-group">
+            <label>📂 所属分类</label>
+            <select name="categoryId">
+                <option value="">全部</option>
+                <option th:each="c : ${categoryList}"
+                        th:selected="${categoryId != null && categoryId == c.id}"
+                        th:text="${c.name}"
+                        th:value="${c.id}">
+                </option>
+            </select>
+        </div>
+        <div class="btn-group">
+            <button class="btn-search" type="submit">🔍 搜索</button>
+            <a class="btn-reset"
+               style="text-decoration:none;display:flex;align-items:center;padding:0 20px;border-radius:8px;height:40px;background:#e8ecf1;color:#4a5568;font-size:14px;font-weight:600;"
+               th:href="@{/product/list}">↻ 重置</a>
+        </div>
+    </form>
+
+    <!-- 搜索结果提示 -->
+    <div class="search-result-info" th:if="${keyword != null and keyword != '' or categoryId != null}">
+        📊 共找到 <strong th:text="${page.total}"></strong> 条商品
+        <span th:if="${keyword != null and keyword != ''}">，关键词：<strong th:text="${keyword}"></strong></span>
+        <span th:if="${categoryId != null}">，分类已筛选</span>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th style="width:60px;">ID</th>
+                <th>商品名称</th>
+                <th style="width:100px;">价格</th>
+                <th style="width:110px;">所属分类</th>
+                <th style="width:100px;">图片</th>
+                <th style="width:160px;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pro : ${page.list}">
+                <td><strong th:text="${pro.id}"></strong></td>
+                <td th:text="${pro.name}"></td>
+                <td class="price" th:text="${pro.price}"></td>
+                <td>
+                        <span class="category-tag"
+                              th:classappend="${pro.category != null ?
+                                  (pro.category.name == '数码电子' ? 'digital' :
+                                   pro.category.name == '图书教材' ? 'book' :
+                                   pro.category.name == '生活居家' ? 'life' : 'default') : 'default'}"
+                              th:text="${pro.category != null ? pro.category.name : '未分类'}">
+                        </span>
+                </td>
+                <td>
+                    <img alt="商品图片"
+                         class="product-img"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+                         th:if="${pro.img != null}"
+                         th:src="${'/static' + pro.img}">
+                    <span class="no-img" style="color:#a0aec0;" th:unless="${pro.img}">无图</span>
+                    <span class="no-img" style="display:none;color:#a0aec0;" th:if="${pro.img}">加载失败</span>
+                </td>
+                <td>
+                    <div class="action-btns">
+                        <a class="btn-edit" th:href="@{/product/toEdit(id=${pro.id})}">✏️ 编辑</a>
+                        <a class="btn-del"
+                           onclick="return confirm('⚠️ 确定要删除商品「${pro.name}」吗？')"
+                           th:href="@{/product/del(id=${pro.id})}">🗑️ 删除</a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${page.list.isEmpty()}">
+                <td colspan="6">
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>没有找到符合条件的商品</p>
+                        <p style="font-size:13px;margin-top:4px;">
+                            <span th:if="${keyword != null and keyword != ''}">尝试修改搜索关键词</span>
+                            <span th:unless="${keyword != null and keyword != ''}">点击 <a style="color:#667eea;"
+                                                                                         th:href="@{/product/toAdd}">新增商品</a></span>
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination">
+        <a th:href="@{/product/list(pageNum=${page.pageNum - 1}, keyword=${keyword}, categoryId=${categoryId})}"
+           th:if="${page.hasPreviousPage}">⬅ 上一页</a>
+        <a class="disabled" th:unless="${page.hasPreviousPage}">⬅ 上一页</a>
+
+        <span class="info">
+            共 <strong th:text="${page.total}"></strong> 条，
+            第 <strong th:text="${page.pageNum}"></strong> / <strong th:text="${page.pages}"></strong> 页
+        </span>
+
+        <a th:href="@{/product/list(pageNum=${page.pageNum + 1}, keyword=${keyword}, categoryId=${categoryId})}"
+           th:if="${page.hasNextPage}">下一页 ➡</a>
+        <a class="disabled" th:unless="${page.hasNextPage}">下一页 ➡</a>
+    </div>
+</div>
+
+</body>
+</html>
